@@ -1,5 +1,6 @@
-import Prompt from "@models/prompt";
-import { connectToDB } from "@utils/database";
+
+import Prompt from "@/models/prompt";
+import { connectToDB } from "@/utils/database";
 
 export const GET = async (request, { params }) => {
     try {
@@ -43,9 +44,12 @@ export const PATCH = async (request, { params }) => {
 export const DELETE = async (request, { params }) => {
     try {
         await connectToDB();
+        // console.log('--------------connected to db ---------------------');
+        // console.log(`--------------${params.id} ---------------------`);
 
         // Find the prompt by ID and remove it
-        await Prompt.findByIdAndRemove(params.id);
+        const { id } = await params; // Await params before using
+        await Prompt.findByIdAndDelete(id);
 
         return new Response("Prompt deleted successfully", { status: 200 });
     } catch (error) {
