@@ -5,15 +5,18 @@ import React from 'react'
 import {signOut, signIn, useSession, getProviders} from 'next-auth/react'
 import { useState, useEffect } from 'react'
 const Nav = () => {
+
+  const {data:session} = useSession()
   const [providers, setProviders] = useState(null)
   const [toggleDropdown, setToggleDropdown] = useState(false)
   useEffect(()=>{
-    const setProviders = async()=>{
+    const setUpProviders = async()=>{
       const res = await getProviders();
       setProviders(res)
     }
+    setUpProviders()
   },[])
-  const isUserLoggedIn = true
+  // const isUserLoggedIn = false
 
   return (
     <nav className="flex-between w-full mb-16 pt-3">
@@ -27,7 +30,7 @@ const Nav = () => {
 
         {/* mobile navigation */}
         <div className="sm:flex hidden">
-          {isUserLoggedIn ?(
+          {session?.user ?(
             <div className='flex gap-3 md:gap-5'>
               <Link href={'/create-prompt'} className='black_btn'>
               Create Post
@@ -35,10 +38,11 @@ const Nav = () => {
               <button type='button' onClick={signOut} className='outline_btn'>Sign out</button>
               <Link href={'/profile'}>
                 <Image
-                src={'/globe.svg'}
+                src={session?.user.image}
                 height={30}
                 width={30}
                 alt='profile'
+                className='rounded-[50%]'
                 >
                 </Image>
               </Link>
@@ -46,6 +50,7 @@ const Nav = () => {
             </div>
           ):(
             <>
+            {/* {alert(providers)} */}
               {
                 providers && 
                 Object.values(providers).map((provider)=>(
@@ -60,13 +65,14 @@ const Nav = () => {
 
         {/* mobile devices */}
         <div className='sm:hidden flex relative'>
-          {isUserLoggedIn?(
+          {session?.user?(
             <div className='flex'>
               <Image
-                src={'/globe.svg'}
+                src={session?.user.image}
                 height={30}
                 width={30}
                 alt='profile'
+                className='rounded-[50%]'
                 onClick={()=>{setToggleDropdown((prev)=>!prev)}}
                 >
                 </Image>
